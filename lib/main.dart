@@ -22,7 +22,7 @@ class QuizApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Quiz App",
-      home: const LoginScreen(),
+      home: LoginScreen(),
     );
   }
 }

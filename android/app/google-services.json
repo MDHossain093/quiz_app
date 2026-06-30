@@ -12,7 +12,20 @@
           "package_name": "com.example.quiz_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "738245793547-7bg3r2404cgft19j80sff442e563i6pk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.quiz_app",
+            "certificate_hash": "5b7f7f4ffad34d6f57815fe680d78f743f8be560"
+          }
+        },
+        {
+          "client_id": "738245793547-5eu88t2tbl4sij100e70818nmqa9p02d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDZwR_fINF8bLAZyiXc1P23U6cJnrIB_gU"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738245793547-5eu88t2tbl4sij100e70818nmqa9p02d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "738245793547-tnorg97fk2dk2omksmuo8rp2hub2hd3f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.quizApp"
+              }
+            }
+          ]
         }
       }
     }
