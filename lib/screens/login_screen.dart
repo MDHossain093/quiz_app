@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
+import '../utils/app_colors.dart';
+import '../utils/app_text_styles.dart';
+import '../widget/custom_button.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -11,52 +14,42 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
-
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-
             children: [
-              const Icon(Icons.quiz, size: 100, color: Colors.deepPurple),
-
+              const Icon(Icons.quiz, size: 100, color: AppColors.primary),
               const SizedBox(height: 20),
-
               const Text(
-                "Quiz App",
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                "Quiz Master",
+                style: AppTextStyles.title,
               ),
-
+              const SizedBox(height: 8),
+              const Text(
+                "Sign in to start today's challenge.",
+                style: AppTextStyles.subtitle,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 50),
+              CustomButton(
+                text: "Continue with Google",
+                icon: Icons.login,
+                onPressed: () async {
+                  final user = await authService.signInWithGoogle();
 
-              SizedBox(
-                width: double.infinity,
-
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.login),
-
-                  label: const Text("Continue with Google"),
-
-                  onPressed: () async {
-                    final user = await authService.signInWithGoogle();
-
-                    print("USER: $user");
-
-                    if (user != null) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => HomeScreen()),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Google Sign-In Failed")),
-                      );
-                    }
-                  },
-                ),
+                  if (user != null) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => HomeScreen()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Google sign-in failed")),
+                    );
+                  }
+                },
               ),
             ],
           ),
