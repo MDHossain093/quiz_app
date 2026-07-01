@@ -8,6 +8,7 @@ import '../widget/custom_button.dart';
 import '../widget/custom_card.dart';
 import '../widget/option_tile.dart';
 import 'result_screen.dart';
+import 'dart:async';
 
 class QuizScreen extends StatefulWidget {
   final int categoryId;
@@ -26,11 +27,18 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   final ApiService apiService = ApiService();
 
-  List<Question> questions = [];
-  int currentIndex = 0;
-  int score = 0;
-  int? selectedAnswer;
-  bool loading = true;
+List<Question> questions = [];
+
+int currentIndex = 0;
+int score = 0;
+int? selectedAnswer;
+
+bool loading = true;
+
+/// Timer
+Timer? timer;
+int timeLeft = 30;
+  
 
   @override
   void initState() {
@@ -39,35 +47,68 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   Future<void> loadQuestions() async {
-    questions = await apiService.getQuestions(widget.categoryId);
+  questions = await apiService.getQuestions(widget.categoryId);
 
-    setState(() {
-      loading = false;
-    });
-  }
+  startTimer();
+
+  setState(() {
+    loading = false;
+  });
+}
+
+void startTimer() {
+  timer?.cancel();
+
+  timeLeft = 30;
+
+  timer = Timer.periodic(
+    const Duration(seconds: 1),
+    (timer) {
+      if (!mounted) return;
+
+      if (timeLeft > 0) {
+        setState(() {
+          timeLeft--;
+        });
+      } else {
+        timer.cancel();
+        nextQuestion();
+      }
+    },
+  );
+}
 
   void nextQuestion() {
-    if (selectedAnswer == questions[currentIndex].answerIndex) {
-      score += questions[currentIndex].mark;
-    }
+  timer?.cancel();
 
-    if (currentIndex == questions.length - 1) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ResultScreen(
-            score: score,
-            total: questions.length * 10,
-          ),
-        ),
-      );
-    } else {
-      setState(() {
-        currentIndex++;
-        selectedAnswer = null;
-      });
-    }
+  if (selectedAnswer == questions[currentIndex].answerIndex) {
+    score += questions[currentIndex].mark;
   }
+
+  if (currentIndex == questions.length - 1) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResultScreen(
+          score: score,
+          total: questions.length * 10,
+        ),
+      ),
+    );
+  } else {
+    setState(() {
+      currentIndex++;
+      selectedAnswer = null;
+    });
+
+    startTimer();
+  }
+}
+@override
+void dispose() {
+  timer?.cancel();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -107,10 +148,52 @@ class _QuizScreenState extends State<QuizScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Question ${currentIndex + 1} / ${questions.length}",
-              style: AppTextStyles.heading,
+            Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+
+    Text(
+      "Question ${currentIndex + 1} of ${questions.length}",
+      style: AppTextStyles.heading,
+    ),
+
+    AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 8,
+      ),
+      decoration: BoxDecoration(
+        color: timeLeft <= 10
+            ? AppColors.danger
+            : AppColors.primary,
+        borderRadius: BorderRadius.circular(30),
+      ),
+
+      child: Row(
+        children: [
+
+          const Icon(
+            Icons.timer,
+            color: Colors.white,
+            size: 18,
+          ),
+
+          const SizedBox(width: 6),
+
+          Text(
+            "$timeLeft s",
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
+          ),
+
+        ],
+      ),
+    ),
+  ],
+),
             const SizedBox(height: 14),
             ClipRRect(
               borderRadius: BorderRadius.circular(18),
